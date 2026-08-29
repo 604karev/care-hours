@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { LoginPage } from './features/auth/LoginPage'
+import { WorkspaceApp } from './features/workspace/WorkspaceApp'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import './App.css'
 
@@ -29,58 +30,10 @@ function SetupRequired() {
   )
 }
 
-function WorkspacePlaceholder({
-  session,
-  workspaceError,
-}: {
-  session: Session
-  workspaceError: string | null
-}) {
-  const email = session.user.email ?? 'пользователь'
-
-  const signOut = async () => {
-    await supabase?.auth.signOut()
-  }
-
-  return (
-    <main className="app-shell">
-      <header className="app-header">
-        <div>
-          <span className="eyebrow">Care Hours</span>
-          <h1>Рабочий табель</h1>
-        </div>
-        <div className="account-block">
-          <span>{email}</span>
-          <button className="secondary-button" type="button" onClick={signOut}>
-            Выйти
-          </button>
-        </div>
-      </header>
-
-      <section className="empty-state">
-        {workspaceError ? (
-          <>
-            <h2>Вход работает, схема ещё не применена</h2>
-            <p>{workspaceError}</p>
-          </>
-        ) : (
-          <>
-            <div className="status-dot" aria-hidden="true" />
-            <h2>Supabase подключён</h2>
-            <p>
-              Сессия и рабочая область готовы. Следующим этапом здесь появится
-              месячная таблица, клиенты и тарифы.
-            </p>
-          </>
-        )}
-      </section>
-    </main>
-  )
-}
-
 function ConnectedApp() {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null)
   const [workspaceError, setWorkspaceError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -93,6 +46,7 @@ function ConnectedApp() {
 
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
+      if (!nextSession) setWorkspaceId(null)
       setIsLoading(false)
     })
 
@@ -102,8 +56,9 @@ function ConnectedApp() {
   useEffect(() => {
     if (!session || !supabase) return
 
-    void supabase.rpc('ensure_personal_workspace').then(({ error }) => {
+    void supabase.rpc('ensure_personal_workspace').then(({ data, error }) => {
       setWorkspaceError(error?.message ?? null)
+      setWorkspaceId(error ? null : data as string)
     })
   }, [session])
 
@@ -111,10 +66,27 @@ function ConnectedApp() {
     return <main className="loading-screen">Загрузка…</main>
   }
 
-  return session ? (
-    <WorkspacePlaceholder session={session} workspaceError={workspaceError} />
-  ) : (
-    <LoginPage />
+  if (!session) return <LoginPage />
+
+  if (workspaceError) {
+    return (
+      <main className="loading-screen error-screen">
+        <section>
+          <h1>Не удалось открыть рабочую область</h1>
+          <p>{workspaceError}</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (!workspaceId) return <main className="loading-screen">Готовим рабочую область…</main>
+
+  return (
+    <WorkspaceApp
+      workspaceId={workspaceId}
+      email={session.user.email ?? 'Пользователь'}
+      onSignOut={async () => { await supabase?.auth.signOut() }}
+    />
   )
 }
 

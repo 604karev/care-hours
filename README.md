@@ -8,6 +8,11 @@ Product specification находится рядом с проектом: `../car
 
 - React 19 + TypeScript + Vite;
 - экран входа через Supabase Auth;
+- справочник клиентов с планом часов и визитов;
+- цветные почасовые и фиксированные тарифы;
+- месячная таблица с несколькими визитами в одной клетке;
+- автоматические итоги по клиентам, тарифам и всему месяцу;
+- тарифные snapshots: прошлые суммы не меняются после редактирования тарифа;
 - безопасная конфигурация через `.env.local`;
 - первоначальная PostgreSQL-схема;
 - Row Level Security по рабочим областям;
@@ -125,6 +130,10 @@ Workflow `.github/workflows/deploy.yml` автоматически провер�
 ```text
 src/
   features/auth/       вход пользователя
+  features/clients/    карточки и формы клиентов
+  features/rates/      тарифы, цвета и ставки
+  features/month/      месячная таблица и визиты
+  features/workspace/  загрузка данных, типы и расчёты
   lib/supabase.ts      клиент Supabase
   test/                тестовый setup
 supabase/
