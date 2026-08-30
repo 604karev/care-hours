@@ -27,6 +27,43 @@
   text-transform: uppercase;
 }
 
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  color: var(--heading);
+  font-weight: 800;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 28px;
+  border-radius: 13px;
+  padding: 4px;
+  background: var(--surface-subtle);
+}
+
+.auth-tabs button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.auth-tabs button.active {
+  background: var(--surface);
+  color: var(--heading);
+  box-shadow: 0 2px 8px rgba(45, 39, 34, 0.08);
+}
+
 .setup-card h1,
 .login-card h1,
 .app-header h1 {
@@ -120,6 +157,37 @@
   padding: 10px 12px;
   background: var(--danger-soft);
   color: var(--danger);
+  font-size: 14px;
+}
+
+.auth-success-card {
+  text-align: center;
+}
+
+.auth-success-card .eyebrow {
+  margin-top: 22px;
+}
+
+.auth-success-card .primary-button {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.auth-success-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 26px;
+  font-weight: 850;
+}
+
+.auth-help {
+  color: var(--muted);
   font-size: 14px;
 }
 
