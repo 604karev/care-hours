@@ -172,7 +172,7 @@ export function WorkspaceApp({
   return (
     <div className="workspace-layout">
       <aside className="sidebar">
-        <div className="brand-block"><span className="brand-mark">CH</span><div><strong>Care Hours</strong><span>{workspace?.name === 'Моя рабочая область' ? t('app.timesheet') : workspace?.name ?? t('app.timesheet')}</span></div></div>
+        <div className="brand-block"><span className="brand-mark">HB</span><div><strong>HourBoard</strong><span>{t('app.tagline')}</span></div></div>
         <nav className="main-nav" aria-label={t('app.mainNav')}>
           {navItems.map((item) => (
             <button className={section === item.id ? 'nav-button active' : 'nav-button'} key={item.id} type="button" onClick={() => setSection(item.id)}>
@@ -184,7 +184,7 @@ export function WorkspaceApp({
       </aside>
 
       <main className="workspace-main">
-        <div className="mobile-toolbar"><strong>Care Hours</strong><LanguageSwitcher compact /></div>
+        <div className="mobile-toolbar"><strong>HourBoard</strong><LanguageSwitcher compact /></div>
         {error && <div className="global-error"><span>{error}</span><button aria-label={t('common.close')} type="button" onClick={() => setError(null)}>×</button></div>}
         {loading ? (
           <div className="workspace-loading"><span className="spinner" />{t('app.timesheetLoading')}</div>

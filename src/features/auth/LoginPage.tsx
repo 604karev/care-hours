@@ -120,8 +120,8 @@ export function LoginPage() {
     <main className="login-shell">
       <section className="login-card">
         <div className="auth-brand">
-          <span className="brand-mark">CH</span>
-          <span>Care Hours</span>
+          <span className="brand-mark">HB</span>
+          <span>HourBoard</span>
           <LanguageSwitcher compact />
         </div>
         <h1>{mode === 'login' ? t('auth.welcome') : mode === 'register' ? t('auth.create') : t('auth.resetTitle')}</h1>

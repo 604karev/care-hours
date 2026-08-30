@@ -14,7 +14,7 @@ function SetupRequired() {
   return (
     <main className="setup-shell">
       <section className="setup-card">
-        <span className="eyebrow">Care Hours</span>
+        <span className="eyebrow">HourBoard</span>
         <LanguageSwitcher />
         <h1>{t('setup.title')}</h1>
         <p>{t('setup.text')}</p>

@@ -1,6 +1,10 @@
-# Care Hours
+# HourBoard
 
-Care Hours is a cloud-based work timesheet for recording client visits, working hours, and rates. The frontend is built with React, TypeScript, and Vite and deployed to GitHub Pages. Supabase provides authentication and the PostgreSQL database.
+**Schedule, clients and earnings.**
+
+HourBoard is a cloud-based work calendar for independent professionals who work with multiple clients. It brings client schedules, working hours, visits, hourly or fixed rates, and monthly earnings together in one clear workspace. It is suitable for carers, cleaners, tutors, beauty professionals, contractors, freelancers, and other client-based workers.
+
+The frontend is built with React, TypeScript, and Vite and deployed to GitHub Pages. Supabase provides authentication and the PostgreSQL database.
 
 Live application: [604karev.github.io/care-hours](https://604karev.github.io/care-hours/)
 
@@ -14,7 +18,7 @@ The product specification is stored next to the project at `../care-hours-produc
 - manual language selection saved in the browser;
 - a client directory with planned monthly hours and visits;
 - colour-coded hourly and per-visit rates;
-- a monthly timesheet with multiple visits in one cell;
+- a monthly work calendar with multiple visits in one cell;
 - automatic totals by client, rate, and month;
 - rate snapshots, so historical amounts do not change when a rate is edited;
 - separate workspaces and Row Level Security for data isolation;
@@ -149,7 +153,7 @@ src/
   features/auth/       registration and sign-in
   features/clients/    client cards and forms
   features/rates/      rates, colours, and payment settings
-  features/month/      monthly timesheet and visits
+  features/month/      monthly work calendar and visits
   features/workspace/  data loading, types, and calculations
   i18n/                translations and language selection
   lib/supabase.ts      Supabase client

@@ -41,8 +41,8 @@ export function UpdatePasswordPage({ onComplete }: { onComplete: () => void }) {
     <main className="login-shell">
       <section className="login-card">
         <div className="auth-brand">
-          <span className="brand-mark">CH</span>
-          <span>Care Hours</span>
+          <span className="brand-mark">HB</span>
+          <span>HourBoard</span>
           <LanguageSwitcher compact />
         </div>
 

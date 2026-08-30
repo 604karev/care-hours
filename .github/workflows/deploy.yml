@@ -1,4 +1,4 @@
-name: Deploy Care Hours to GitHub Pages
+name: Deploy HourBoard to GitHub Pages
 
 on:
   push:
