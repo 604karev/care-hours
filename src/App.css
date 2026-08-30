@@ -396,9 +396,7 @@
 }
 
 .sidebar-account .language-switcher select {
-  width: 92px;
-  min-width: 92px;
-  flex: 0 0 92px;
+  flex: 0 0 auto;
 }
 
 .sidebar-account > span {
