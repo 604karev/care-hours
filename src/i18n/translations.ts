@@ -8,7 +8,7 @@ export const languageLocales: Record<Language, string> = {
 
 export const translations: Record<Language, Record<string, string>> = {
   ru: {
-    'language.label': 'Язык интерфейса',
+    'language.label': 'Язык',
     'language.ru': 'Русский', 'language.pl': 'Polski', 'language.en': 'English',
     'common.save': 'Сохранить', 'common.saving': 'Сохраняем…', 'common.cancel': 'Отмена',
     'common.edit': 'Изменить', 'common.archive': 'В архив', 'common.delete': 'Удалить', 'common.close': 'Закрыть',
@@ -74,7 +74,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'unit.hour': 'ч', 'unit.minute': 'мин', 'unit.visits': 'виз.',
   },
   pl: {
-    'language.label': 'Język interfejsu',
+    'language.label': 'Język',
     'language.ru': 'Русский', 'language.pl': 'Polski', 'language.en': 'English',
     'common.save': 'Zapisz', 'common.saving': 'Zapisywanie…', 'common.cancel': 'Anuluj',
     'common.edit': 'Edytuj', 'common.archive': 'Archiwizuj', 'common.delete': 'Usuń', 'common.close': 'Zamknij',
@@ -140,7 +140,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'unit.hour': 'godz.', 'unit.minute': 'min', 'unit.visits': 'wiz.',
   },
   en: {
-    'language.label': 'Interface language',
+    'language.label': 'Language',
     'language.ru': 'Русский', 'language.pl': 'Polski', 'language.en': 'English',
     'common.save': 'Save', 'common.saving': 'Saving…', 'common.cancel': 'Cancel',
     'common.edit': 'Edit', 'common.archive': 'Archive', 'common.delete': 'Delete', 'common.close': 'Close',

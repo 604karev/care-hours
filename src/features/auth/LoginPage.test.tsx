@@ -64,7 +64,7 @@ describe('LoginPage', () => {
   it('switches the interface language', () => {
     renderPage()
 
-    fireEvent.change(screen.getByLabelText('Язык интерфейса'), { target: { value: 'pl' } })
+    fireEvent.change(screen.getByLabelText('Язык'), { target: { value: 'pl' } })
 
     expect(screen.getByRole('heading', { name: 'Witaj ponownie' })).toBeInTheDocument()
     expect(window.localStorage.getItem('care-hours-language')).toBe('pl')
