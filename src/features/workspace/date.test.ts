@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculateVisitAmount, minutesToTime, timeToMinutes } from './date'
+import { calculateVisitAmount, formatDuration, monthLabel, minutesToTime, timeToMinutes } from './date'
 
 describe('visit calculations', () => {
   it('converts time to minutes and back', () => {
@@ -13,5 +13,13 @@ describe('visit calculations', () => {
 
   it('uses the full fixed rate for a visit', () => {
     expect(calculateVisitAmount(25, 'per_visit', 60)).toBe(60)
+  })
+
+  it('formats dates and durations for the selected language', () => {
+    const january = new Date(2026, 0, 1)
+
+    expect(monthLabel(january, 'pl')).toContain('2026')
+    expect(monthLabel(january, 'pl').toLowerCase()).toContain('styczeń')
+    expect(formatDuration(90, 'en')).toBe('1 h 30 min')
   })
 })

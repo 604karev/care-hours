@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { displayTime, formatDuration, formatMoney, monthDays, monthLabel, shiftMonth, toIsoDate } from '../workspace/date'
 import type { AppSection, Client, ServiceType, Visit } from '../workspace/types'
+import { useI18n } from '../../i18n/useI18n'
 
 interface VisitSelection {
   client: Client
@@ -25,8 +26,9 @@ export function MonthView({
   onSelectVisit: (selection: VisitSelection) => void
   onNavigate: (section: AppSection) => void
 }) {
+  const { language, t } = useI18n()
   const [compact, setCompact] = useState(false)
-  const days = useMemo(() => monthDays(month), [month])
+  const days = useMemo(() => monthDays(month, language), [language, month])
   const activeClients = clients.filter((client) => !client.is_archived)
   const activeServices = serviceTypes.filter((service) => !service.is_archived)
   const today = toIsoDate(new Date())
@@ -67,15 +69,15 @@ export function MonthView({
   if (!activeServices.length || !activeClients.length) {
     return (
       <section className="content-section">
-        <header className="section-header"><div><p className="section-kicker">Главный экран</p><h2>Месячный табель</h2></div></header>
+        <header className="section-header"><div><p className="section-kicker">{t('month.main')}</p><h2>{t('month.timesheet')}</h2></div></header>
         <div className="onboarding-grid">
           <article className={activeServices.length ? 'onboarding-card complete' : 'onboarding-card'}>
-            <span>1</span><h3>Добавьте тарифы</h3><p>Цвет, ставка и способ расчёта для каждого типа визита.</p>
-            <button className="secondary-button" type="button" onClick={() => onNavigate('rates')}>{activeServices.length ? 'Готово' : 'Перейти к тарифам'}</button>
+            <span>1</span><h3>{t('month.addRates')}</h3><p>{t('month.addRatesText')}</p>
+            <button className="secondary-button" type="button" onClick={() => onNavigate('rates')}>{activeServices.length ? t('common.done') : t('month.goRates')}</button>
           </article>
           <article className={activeClients.length ? 'onboarding-card complete' : 'onboarding-card'}>
-            <span>2</span><h3>Добавьте клиентов</h3><p>Укажите планы и обычную продолжительность визита.</p>
-            <button className="secondary-button" type="button" onClick={() => onNavigate('clients')}>{activeClients.length ? 'Готово' : 'Перейти к клиентам'}</button>
+            <span>2</span><h3>{t('month.addClients')}</h3><p>{t('month.addClientsText')}</p>
+            <button className="secondary-button" type="button" onClick={() => onNavigate('clients')}>{activeClients.length ? t('common.done') : t('month.goClients')}</button>
           </article>
         </div>
       </section>
@@ -86,13 +88,13 @@ export function MonthView({
     <section className="month-section">
       <header className="month-toolbar">
         <div className="month-switcher">
-          <button aria-label="Предыдущий месяц" className="icon-button" type="button" onClick={() => onMonthChange(shiftMonth(month, -1))}>‹</button>
-          <div><p className="section-kicker">Месячный табель</p><h2>{monthLabel(month)}</h2></div>
-          <button aria-label="Следующий месяц" className="icon-button" type="button" onClick={() => onMonthChange(shiftMonth(month, 1))}>›</button>
+          <button aria-label={t('month.previous')} className="icon-button" type="button" onClick={() => onMonthChange(shiftMonth(month, -1))}>‹</button>
+          <div><p className="section-kicker">{t('month.timesheet')}</p><h2>{monthLabel(month, language)}</h2></div>
+          <button aria-label={t('month.next')} className="icon-button" type="button" onClick={() => onMonthChange(shiftMonth(month, 1))}>›</button>
         </div>
         <div className="toolbar-actions">
-          <button className="secondary-button" type="button" onClick={() => onMonthChange(new Date())}>Сегодня</button>
-          <button className="secondary-button" type="button" onClick={() => setCompact((value) => !value)}>{compact ? 'Подробнее' : 'Компактно'}</button>
+          <button className="secondary-button" type="button" onClick={() => onMonthChange(new Date())}>{t('month.today')}</button>
+          <button className="secondary-button" type="button" onClick={() => setCompact((value) => !value)}>{compact ? t('month.details') : t('month.compact')}</button>
         </div>
       </header>
 
@@ -100,15 +102,15 @@ export function MonthView({
         {serviceTotals.map(({ service, minutes, amount }) => (
           <article className="summary-card" key={service.id}>
             <span className="rate-swatch" style={{ background: service.background_color }} />
-            <div><strong>{service.name}</strong><span>{formatDuration(minutes)} · {formatMoney(amount, service.currency_code)}</span></div>
+            <div><strong>{service.name}</strong><span>{formatDuration(minutes, language)} · {formatMoney(amount, service.currency_code, language)}</span></div>
           </article>
         ))}
-        <article className="summary-card total-card"><div><strong>Итого</strong><span>{visits.length} виз. · {formatDuration(totalMinutes)} · {formatMoney(totalAmount)}</span></div></article>
+        <article className="summary-card total-card"><div><strong>{t('month.total')}</strong><span>{visits.length} {t('unit.visits')} · {formatDuration(totalMinutes, language)} · {formatMoney(totalAmount, 'PLN', language)}</span></div></article>
       </div>
 
       <div className={compact ? 'calendar-scroll compact-calendar' : 'calendar-scroll'}>
         <div className="calendar-grid" style={{ gridTemplateColumns: `230px repeat(${days.length}, minmax(${compact ? 72 : 104}px, 1fr))` }}>
-          <div className="calendar-corner">Клиент</div>
+          <div className="calendar-corner">{t('month.client')}</div>
           {days.map((day) => (
             <div className={`day-heading ${day.isWeekend ? 'weekend' : ''} ${day.date === today ? 'today' : ''}`} key={day.date}>
               <span>{day.weekday}</span><strong>{day.day}</strong>
@@ -124,7 +126,7 @@ export function MonthView({
               <div className="calendar-row" key={client.id} style={{ gridColumn: `1 / span ${days.length + 1}` }}>
                 <div className="client-heading-cell">
                   <strong>{client.display_name}</strong>
-                  <span>{formatDuration(totals.minutes)} · {totals.visits} виз.</span>
+                  <span>{formatDuration(totals.minutes, language)} · {totals.visits} {t('unit.visits')}</span>
                   {client.planned_minutes_per_month && <div className="progress-track"><span style={{ width: `${hoursProgress}%` }} /></div>}
                 </div>
                 {days.map((day) => {
@@ -159,7 +161,7 @@ export function MonthView({
           })}
         </div>
       </div>
-      <p className="calendar-hint">Нажмите на клетку, чтобы добавить визит. Таблица прокручивается горизонтально.</p>
+      <p className="calendar-hint">{t('month.hint')}</p>
     </section>
   )
 }

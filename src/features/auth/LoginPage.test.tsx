@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LoginPage } from './LoginPage'
+import { I18nProvider } from '../../i18n/I18nProvider'
 
 const authMocks = vi.hoisted(() => ({
   signInWithPassword: vi.fn(),
@@ -12,6 +13,8 @@ vi.mock('../../lib/supabase', () => ({
 }))
 
 describe('LoginPage', () => {
+  const renderPage = () => render(<I18nProvider><LoginPage /></I18nProvider>)
+
   beforeEach(() => {
     authMocks.signInWithPassword.mockReset()
     authMocks.signUp.mockReset()
@@ -19,7 +22,7 @@ describe('LoginPage', () => {
 
   it('signs in with email and password', async () => {
     authMocks.signInWithPassword.mockResolvedValue({ error: null })
-    render(<LoginPage />)
+    renderPage()
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: ' wife@example.com ' } })
     fireEvent.change(screen.getByLabelText('Пароль'), { target: { value: 'password123' } })
@@ -31,7 +34,7 @@ describe('LoginPage', () => {
   })
 
   it('validates matching passwords before registration', () => {
-    render(<LoginPage />)
+    renderPage()
     fireEvent.click(screen.getByRole('button', { name: 'Регистрация' }))
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'new@example.com' } })
@@ -45,7 +48,7 @@ describe('LoginPage', () => {
 
   it('shows email confirmation instructions after registration', async () => {
     authMocks.signUp.mockResolvedValue({ data: { session: null }, error: null })
-    render(<LoginPage />)
+    renderPage()
     fireEvent.click(screen.getByRole('button', { name: 'Регистрация' }))
 
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'new@example.com' } })
@@ -54,7 +57,16 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Создать аккаунт' }))
 
     expect(await screen.findByText('Проверьте почту')).toBeInTheDocument()
-    expect(screen.getByText('new@example.com')).toBeInTheDocument()
+    expect(screen.getByText(/new@example.com/)).toBeInTheDocument()
     expect(authMocks.signUp).toHaveBeenCalledOnce()
+  })
+
+  it('switches the interface language', () => {
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Язык интерфейса'), { target: { value: 'pl' } })
+
+    expect(screen.getByRole('heading', { name: 'Witaj ponownie' })).toBeInTheDocument()
+    expect(window.localStorage.getItem('care-hours-language')).toBe('pl')
   })
 })

@@ -1,11 +1,4 @@
-const monthFormatter = new Intl.DateTimeFormat('ru-RU', {
-  month: 'long',
-  year: 'numeric',
-})
-
-const weekdayFormatter = new Intl.DateTimeFormat('ru-RU', {
-  weekday: 'short',
-})
+import { languageLocales, translations, type Language } from '../../i18n/translations'
 
 export function toIsoDate(date: Date) {
   const year = date.getFullYear()
@@ -20,7 +13,8 @@ export function monthBounds(date: Date) {
   return { start: toIsoDate(start), end: toIsoDate(end) }
 }
 
-export function monthDays(date: Date) {
+export function monthDays(date: Date, language: Language = 'ru') {
+  const weekdayFormatter = new Intl.DateTimeFormat(languageLocales[language], { weekday: 'short' })
   const count = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
   return Array.from({ length: count }, (_, index) => {
     const value = new Date(date.getFullYear(), date.getMonth(), index + 1)
@@ -33,7 +27,8 @@ export function monthDays(date: Date) {
   })
 }
 
-export function monthLabel(date: Date) {
+export function monthLabel(date: Date, language: Language = 'ru') {
+  const monthFormatter = new Intl.DateTimeFormat(languageLocales[language], { month: 'long', year: 'numeric' })
   const label = monthFormatter.format(date)
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
@@ -52,16 +47,18 @@ export function minutesToTime(value: number) {
   return `${String(Math.floor(safeValue / 60)).padStart(2, '0')}:${String(safeValue % 60).padStart(2, '0')}`
 }
 
-export function formatDuration(minutes: number) {
+export function formatDuration(minutes: number, language: Language = 'ru') {
   const hours = Math.floor(minutes / 60)
   const rest = minutes % 60
-  if (!hours) return `${rest} мин`
-  if (!rest) return `${hours} ч`
-  return `${hours} ч ${rest} мин`
+  const hour = translations[language]['unit.hour']
+  const minute = translations[language]['unit.minute']
+  if (!hours) return `${rest} ${minute}`
+  if (!rest) return `${hours} ${hour}`
+  return `${hours} ${hour} ${rest} ${minute}`
 }
 
-export function formatMoney(value: number, currency = 'PLN') {
-  return new Intl.NumberFormat('pl-PL', {
+export function formatMoney(value: number, currency = 'PLN', language: Language = 'ru') {
+  return new Intl.NumberFormat(languageLocales[language], {
     style: 'currency',
     currency,
   }).format(value)

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useI18n } from '../../i18n/useI18n'
 
 export function Modal({
   title,
@@ -9,6 +10,7 @@ export function Modal({
   children: ReactNode
   onClose: () => void
 }) {
+  const { t } = useI18n()
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
@@ -20,7 +22,7 @@ export function Modal({
       >
         <header className="modal-header">
           <h2>{title}</h2>
-          <button aria-label="Закрыть" className="icon-button" type="button" onClick={onClose}>
+          <button aria-label={t('common.close')} className="icon-button" type="button" onClick={onClose}>
             ×
           </button>
         </header>

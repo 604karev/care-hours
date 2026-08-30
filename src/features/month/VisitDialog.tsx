@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { calculateVisitAmount, displayTime, formatDuration, formatMoney, minutesToTime, timeToMinutes } from '../workspace/date'
 import { Modal } from '../workspace/Modal'
 import type { Client, ServiceType, Visit } from '../workspace/types'
+import { useI18n } from '../../i18n/useI18n'
 
 export interface VisitInput {
   serviceTypeId: string
@@ -27,6 +28,7 @@ export function VisitDialog({
   onSave: (value: VisitInput) => Promise<void>
   onDelete: (() => Promise<void>) | null
 }) {
+  const { language, locale, t } = useI18n()
   const initialStart = visit ? displayTime(visit.start_time) : client.typical_start_time?.slice(0, 5) ?? '09:00'
   const initialEnd = visit
     ? displayTime(visit.end_time)
@@ -51,11 +53,11 @@ export function VisitDialog({
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (calculation.duration <= 0) {
-      setError('Время окончания должно быть позже времени начала')
+      setError(t('error.invalidTime'))
       return
     }
     if (!serviceTypeId) {
-      setError('Сначала выберите тариф')
+      setError(t('visit.selectFirst'))
       return
     }
     setSaving(true)
@@ -64,63 +66,63 @@ export function VisitDialog({
       await onSave({ serviceTypeId, startTime, endTime, shortNote: note.trim() || null })
       onClose()
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'Не удалось сохранить визит')
+      setError(caughtError instanceof Error ? caughtError.message : t('error.saveVisit'))
     } finally {
       setSaving(false)
     }
   }
 
   const remove = async () => {
-    if (!onDelete || !window.confirm('Удалить этот визит?')) return
+    if (!onDelete || !window.confirm(t('confirm.deleteVisit'))) return
     setSaving(true)
     setError(null)
     try {
       await onDelete()
       onClose()
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'Не удалось удалить визит')
+      setError(caughtError instanceof Error ? caughtError.message : t('error.deleteVisit'))
       setSaving(false)
     }
   }
 
   return (
-    <Modal title={visit ? 'Редактировать визит' : 'Добавить визит'} onClose={onClose}>
+    <Modal title={visit ? t('visit.edit') : t('visit.add')} onClose={onClose}>
       <div className="visit-context">
         <strong>{client.display_name}</strong>
-        <span>{new Intl.DateTimeFormat('ru-RU', { dateStyle: 'long' }).format(new Date(`${date}T12:00:00`))}</span>
+        <span>{new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(`${date}T12:00:00`))}</span>
       </div>
       <form className="entity-form" onSubmit={submit}>
         <label className="field wide-field">
-          Тариф
+          {t('visit.rate')}
           <select required value={serviceTypeId} onChange={(event) => setServiceTypeId(event.target.value)}>
-            <option value="">Выберите тариф</option>
+            <option value="">{t('visit.selectRate')}</option>
             {serviceTypes.map((serviceType) => (
-              <option key={serviceType.id} value={serviceType.id}>{serviceType.name} · {formatMoney(Number(serviceType.rate_amount), serviceType.currency_code)}</option>
+              <option key={serviceType.id} value={serviceType.id}>{serviceType.name} · {formatMoney(Number(serviceType.rate_amount), serviceType.currency_code, language)}</option>
             ))}
           </select>
         </label>
         <label className="field">
-          Начало
+          {t('visit.start')}
           <input required type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} />
         </label>
         <label className="field">
-          Окончание
+          {t('visit.end')}
           <input required type="time" value={endTime} onChange={(event) => setEndTime(event.target.value)} />
         </label>
         <label className="field wide-field">
-          Короткая заметка
-          <input maxLength={300} placeholder="Необязательно" value={note} onChange={(event) => setNote(event.target.value)} />
+          {t('visit.note')}
+          <input maxLength={300} placeholder={t('common.notOptional')} value={note} onChange={(event) => setNote(event.target.value)} />
         </label>
         <div className="visit-calculation wide-field">
-          <span>{calculation.duration > 0 ? formatDuration(calculation.duration) : 'Проверьте время'}</span>
-          <strong>{formatMoney(calculation.amount, calculation.currency)}</strong>
+          <span>{calculation.duration > 0 ? formatDuration(calculation.duration, language) : t('visit.checkTime')}</span>
+          <strong>{formatMoney(calculation.amount, calculation.currency, language)}</strong>
         </div>
         {error && <p className="form-error wide-field">{error}</p>}
         <footer className="form-actions wide-field split-actions">
-          <div>{onDelete && <button className="text-button danger-text" disabled={saving} type="button" onClick={() => void remove()}>Удалить</button>}</div>
+          <div>{onDelete && <button className="text-button danger-text" disabled={saving} type="button" onClick={() => void remove()}>{t('common.delete')}</button>}</div>
           <div className="form-actions-group">
-            <button className="secondary-button" type="button" onClick={onClose}>Отмена</button>
-            <button className="primary-button" disabled={saving} type="submit">{saving ? 'Сохраняем…' : 'Сохранить'}</button>
+            <button className="secondary-button" type="button" onClick={onClose}>{t('common.cancel')}</button>
+            <button className="primary-button" disabled={saving} type="submit">{saving ? t('common.saving') : t('common.save')}</button>
           </div>
         </footer>
       </form>

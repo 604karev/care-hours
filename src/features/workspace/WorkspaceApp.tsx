@@ -6,6 +6,8 @@ import { RatesView, type ServiceTypeInput } from '../rates/RatesView'
 import { calculateVisitAmount, monthBounds, timeToMinutes } from './date'
 import type { AppSection, Client, ServiceType, Visit, Workspace } from './types'
 import { supabase } from '../../lib/supabase'
+import { useI18n } from '../../i18n/useI18n'
+import { LanguageSwitcher } from '../../i18n/LanguageSwitcher'
 
 function asError(message: string, error?: { message: string } | null) {
   return new Error(error?.message || message)
@@ -20,6 +22,7 @@ export function WorkspaceApp({
   email: string
   onSignOut: () => Promise<void>
 }) {
+  const { t } = useI18n()
   const [section, setSection] = useState<AppSection>('month')
   const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1))
   const [workspace, setWorkspace] = useState<Workspace | null>(null)
@@ -66,12 +69,12 @@ export function WorkspaceApp({
 
     void load().catch((caughtError) => {
       if (!active) return
-      setError(caughtError instanceof Error ? caughtError.message : 'Не удалось загрузить рабочую область')
+      setError(caughtError instanceof Error ? caughtError.message : t('error.loadWorkspace'))
       setLoading(false)
     })
 
     return () => { active = false }
-  }, [bounds.end, bounds.start, revision, workspaceId])
+  }, [bounds.end, bounds.start, revision, t, workspaceId])
 
   const saveClient = async (clientId: string | null, value: ClientInput) => {
     if (!supabase) return
@@ -79,12 +82,12 @@ export function WorkspaceApp({
     const result = clientId
       ? await supabase.from('clients').update(payload).eq('id', clientId).eq('workspace_id', workspaceId)
       : await supabase.from('clients').insert({ ...payload, sort_order: clients.length })
-    if (result.error) throw asError('Не удалось сохранить клиента', result.error)
+    if (result.error) throw asError(t('error.saveClient'), result.error)
     refresh()
   }
 
   const archiveClient = async (client: Client) => {
-    if (!supabase || !window.confirm(`Переместить «${client.display_name}» в архив?`)) return
+    if (!supabase || !window.confirm(t('confirm.archiveClient', { name: client.display_name }))) return
     const { error: archiveError } = await supabase.from('clients').update({ is_archived: true }).eq('id', client.id).eq('workspace_id', workspaceId)
     if (archiveError) setError(archiveError.message)
     else refresh()
@@ -96,12 +99,12 @@ export function WorkspaceApp({
     const result = serviceTypeId
       ? await supabase.from('service_types').update(payload).eq('id', serviceTypeId).eq('workspace_id', workspaceId)
       : await supabase.from('service_types').insert({ ...payload, sort_order: serviceTypes.length })
-    if (result.error) throw asError('Не удалось сохранить тариф', result.error)
+    if (result.error) throw asError(t('error.saveRate'), result.error)
     refresh()
   }
 
   const archiveServiceType = async (serviceType: ServiceType) => {
-    if (!supabase || !window.confirm(`Переместить тариф «${serviceType.name}» в архив?`)) return
+    if (!supabase || !window.confirm(t('confirm.archiveRate', { name: serviceType.name }))) return
     const { error: archiveError } = await supabase.from('service_types').update({ is_archived: true }).eq('id', serviceType.id).eq('workspace_id', workspaceId)
     if (archiveError) setError(archiveError.message)
     else refresh()
@@ -110,9 +113,9 @@ export function WorkspaceApp({
   const saveVisit = async (value: VisitInput) => {
     if (!supabase || !selection) return
     const serviceType = serviceTypes.find((item) => item.id === value.serviceTypeId)
-    if (!serviceType) throw new Error('Выбранный тариф не найден')
+    if (!serviceType) throw new Error(t('error.rateNotFound'))
     const duration = timeToMinutes(value.endTime) - timeToMinutes(value.startTime)
-    if (duration <= 0) throw new Error('Время окончания должно быть позже времени начала')
+    if (duration <= 0) throw new Error(t('error.invalidTime'))
 
     const preserveSnapshot = selection.visit?.service_type_id === serviceType.id
     const rateUnit = preserveSnapshot ? selection.visit!.rate_unit_snapshot : serviceType.rate_unit
@@ -142,7 +145,7 @@ export function WorkspaceApp({
     const result = selection.visit
       ? await supabase.from('visits').update(payload).eq('id', selection.visit.id).eq('workspace_id', workspaceId)
       : await supabase.from('visits').insert(payload)
-    if (result.error) throw asError('Не удалось сохранить визит', result.error)
+    if (result.error) throw asError(t('error.saveVisit'), result.error)
 
     const visitDate = new Date(`${selection.date}T12:00:00`)
     await supabase.from('monthly_sheets').upsert({
@@ -156,34 +159,35 @@ export function WorkspaceApp({
   const deleteVisit = async () => {
     if (!supabase || !selection?.visit) return
     const { error: deleteError } = await supabase.from('visits').delete().eq('id', selection.visit.id).eq('workspace_id', workspaceId)
-    if (deleteError) throw asError('Не удалось удалить визит', deleteError)
+    if (deleteError) throw asError(t('error.deleteVisit'), deleteError)
     refresh()
   }
 
   const navItems: Array<{ id: AppSection; label: string; icon: string }> = [
-    { id: 'month', label: 'Месяц', icon: '▦' },
-    { id: 'clients', label: 'Клиенты', icon: '♙' },
-    { id: 'rates', label: 'Тарифы', icon: '●' },
+    { id: 'month', label: t('nav.month'), icon: '▦' },
+    { id: 'clients', label: t('nav.clients'), icon: '♙' },
+    { id: 'rates', label: t('nav.rates'), icon: '●' },
   ]
 
   return (
     <div className="workspace-layout">
       <aside className="sidebar">
-        <div className="brand-block"><span className="brand-mark">CH</span><div><strong>Care Hours</strong><span>{workspace?.name ?? 'Рабочий табель'}</span></div></div>
-        <nav className="main-nav" aria-label="Основная навигация">
+        <div className="brand-block"><span className="brand-mark">CH</span><div><strong>Care Hours</strong><span>{workspace?.name === 'Моя рабочая область' ? t('app.timesheet') : workspace?.name ?? t('app.timesheet')}</span></div></div>
+        <nav className="main-nav" aria-label={t('app.mainNav')}>
           {navItems.map((item) => (
             <button className={section === item.id ? 'nav-button active' : 'nav-button'} key={item.id} type="button" onClick={() => setSection(item.id)}>
               <span>{item.icon}</span>{item.label}
             </button>
           ))}
         </nav>
-        <div className="sidebar-account"><span title={email}>{email}</span><button className="text-button" type="button" onClick={() => void onSignOut()}>Выйти</button></div>
+        <div className="sidebar-account"><LanguageSwitcher /><span title={email}>{email}</span><button className="text-button" type="button" onClick={() => void onSignOut()}>{t('app.signOut')}</button></div>
       </aside>
 
       <main className="workspace-main">
-        {error && <div className="global-error"><span>{error}</span><button aria-label="Закрыть ошибку" type="button" onClick={() => setError(null)}>×</button></div>}
+        <div className="mobile-toolbar"><strong>Care Hours</strong><LanguageSwitcher compact /></div>
+        {error && <div className="global-error"><span>{error}</span><button aria-label={t('common.close')} type="button" onClick={() => setError(null)}>×</button></div>}
         {loading ? (
-          <div className="workspace-loading"><span className="spinner" />Загружаем табель…</div>
+          <div className="workspace-loading"><span className="spinner" />{t('app.timesheetLoading')}</div>
         ) : (
           <>
             {section === 'month' && <MonthView month={month} clients={clients} serviceTypes={serviceTypes} visits={visits} onMonthChange={setMonth} onSelectVisit={setSelection} onNavigate={setSection} />}
@@ -193,7 +197,7 @@ export function WorkspaceApp({
         )}
       </main>
 
-      <nav className="mobile-nav" aria-label="Мобильная навигация">
+      <nav className="mobile-nav" aria-label={t('app.mobileNav')}>
         {navItems.map((item) => (
           <button className={section === item.id ? 'active' : ''} key={item.id} type="button" onClick={() => setSection(item.id)}><span>{item.icon}</span>{item.label}</button>
         ))}

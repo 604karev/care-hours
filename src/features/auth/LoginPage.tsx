@@ -1,23 +1,27 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useI18n } from '../../i18n/useI18n'
+import { LanguageSwitcher } from '../../i18n/LanguageSwitcher'
 
 type AuthMode = 'login' | 'register'
 
-function authErrorMessage(message: string, mode: AuthMode) {
+function authErrorMessage(message: string, mode: AuthMode, t: (key: string) => string) {
   const normalized = message.toLowerCase()
 
-  if (normalized.includes('invalid login credentials')) return 'Неверный email или пароль.'
-  if (normalized.includes('email not confirmed')) return 'Сначала подтвердите email по ссылке из письма.'
-  if (normalized.includes('user already registered')) return 'Аккаунт с таким email уже существует. Попробуйте войти.'
-  if (normalized.includes('password should be')) return 'Пароль слишком простой. Используйте не менее 8 символов.'
-  if (normalized.includes('rate limit')) return 'Слишком много попыток. Подождите немного и попробуйте снова.'
+  if (normalized.includes('invalid login credentials')) return t('auth.invalid')
+  if (normalized.includes('email not confirmed')) return t('auth.notConfirmed')
+  if (normalized.includes('user already registered')) return t('auth.exists')
+  if (normalized.includes('password should be') || normalized.includes('weak_password')) return t('auth.weak')
+  if (normalized.includes('rate limit')) return t('auth.rateLimit')
+  if (normalized.includes('signup_disabled') || normalized.includes('signups not allowed')) return t('auth.signupDisabled')
 
   return mode === 'login'
-    ? 'Не удалось войти. Попробуйте ещё раз.'
-    : 'Не удалось создать аккаунт. Попробуйте ещё раз.'
+    ? t('auth.loginFailed')
+    : t('auth.registerFailed')
 }
 
 export function LoginPage() {
+  const { t } = useI18n()
   const [mode, setMode] = useState<AuthMode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +45,7 @@ export function LoginPage() {
     setError(null)
 
     if (mode === 'register' && password !== passwordConfirmation) {
-      setError('Пароли не совпадают.')
+      setError(t('auth.passwordMismatch'))
       return
     }
 
@@ -54,7 +58,7 @@ export function LoginPage() {
       })
 
       if (authError) {
-        setError(authErrorMessage(authError.message, mode))
+        setError(authErrorMessage(authError.message, mode, t))
         setIsSubmitting(false)
       }
       return
@@ -68,7 +72,7 @@ export function LoginPage() {
     })
 
     if (authError) {
-      setError(authErrorMessage(authError.message, mode))
+      setError(authErrorMessage(authError.message, mode, t))
       setIsSubmitting(false)
       return
     }
@@ -84,15 +88,13 @@ export function LoginPage() {
       <main className="login-shell">
         <section className="login-card auth-success-card">
           <div className="auth-success-icon" aria-hidden="true">✓</div>
-          <span className="eyebrow">Почти готово</span>
-          <h1>Проверьте почту</h1>
-          <p>
-            Мы отправили ссылку для подтверждения на <strong>{confirmationEmail}</strong>.
-            После перехода по ссылке можно войти в свой табель.
-          </p>
-          <p className="auth-help">Если письма нет, проверьте папку «Спам».</p>
+          <span className="eyebrow">{t('auth.almost')}</span>
+          <LanguageSwitcher />
+          <h1>{t('auth.checkEmail')}</h1>
+          <p>{t('auth.confirmation', { email: confirmationEmail })}</p>
+          <p className="auth-help">{t('auth.spam')}</p>
           <button className="primary-button" type="button" onClick={() => changeMode('login')}>
-            Вернуться ко входу
+            {t('auth.back')}
           </button>
         </section>
       </main>
@@ -105,26 +107,27 @@ export function LoginPage() {
         <div className="auth-brand">
           <span className="brand-mark">CH</span>
           <span>Care Hours</span>
+          <LanguageSwitcher compact />
         </div>
-        <h1>{mode === 'login' ? 'С возвращением' : 'Создайте аккаунт'}</h1>
+        <h1>{mode === 'login' ? t('auth.welcome') : t('auth.create')}</h1>
         <p>
           {mode === 'login'
-            ? 'Войдите, чтобы продолжить работу с табелем.'
-            : 'Ваши клиенты, тарифы и табели будут доступны только вам.'}
+            ? t('auth.loginText')
+            : t('auth.registerText')}
         </p>
 
-        <div className="auth-tabs" aria-label="Авторизация">
+        <div className="auth-tabs" aria-label={t('auth.tabs')}>
           <button className={mode === 'login' ? 'active' : ''} type="button" onClick={() => changeMode('login')}>
-            Вход
+            {t('auth.login')}
           </button>
           <button className={mode === 'register' ? 'active' : ''} type="button" onClick={() => changeMode('register')}>
-            Регистрация
+            {t('auth.register')}
           </button>
         </div>
 
         <form className="login-form" onSubmit={submit}>
           <label className="field">
-            Email
+            {t('auth.email')}
             <input
               autoComplete="email"
               inputMode="email"
@@ -137,11 +140,11 @@ export function LoginPage() {
           </label>
 
           <label className="field">
-            Пароль
+            {t('auth.password')}
             <input
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               minLength={8}
-              placeholder="Не менее 8 символов"
+              placeholder={t('auth.passwordPlaceholder')}
               required
               type="password"
               value={password}
@@ -151,11 +154,11 @@ export function LoginPage() {
 
           {mode === 'register' && (
             <label className="field">
-              Повторите пароль
+              {t('auth.repeatPassword')}
               <input
                 autoComplete="new-password"
                 minLength={8}
-                placeholder="Введите пароль ещё раз"
+                placeholder={t('auth.repeatPlaceholder')}
                 required
                 type="password"
                 value={passwordConfirmation}
@@ -168,8 +171,8 @@ export function LoginPage() {
 
           <button className="primary-button" disabled={isSubmitting} type="submit">
             {isSubmitting
-              ? mode === 'login' ? 'Входим…' : 'Создаём аккаунт…'
-              : mode === 'login' ? 'Войти' : 'Создать аккаунт'}
+              ? mode === 'login' ? t('auth.signingIn') : t('auth.creating')
+              : mode === 'login' ? t('auth.signIn') : t('auth.createAccount')}
           </button>
         </form>
       </section>
