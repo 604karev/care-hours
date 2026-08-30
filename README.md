@@ -6,7 +6,9 @@ HourBoard is a cloud-based work calendar for independent professionals who work 
 
 The frontend is built with React, TypeScript, and Vite and deployed to GitHub Pages. Supabase provides authentication and the PostgreSQL database.
 
-Live application: [604karev.github.io/care-hours](https://604karev.github.io/care-hours/)
+Production website: [hourboard.pl](https://hourboard.pl/)
+
+Live application: [app.hourboard.pl](https://app.hourboard.pl/)
 
 The product specification is stored next to the project at `../care-hours-product-spec.md`.
 
@@ -113,7 +115,8 @@ Docker is not required for these remote commands. It is only needed when running
 2. Keeping **Confirm email** enabled is recommended.
 3. In **Authentication → URL Configuration**, set the deployed application URL as the **Site URL**.
 4. Add a local address such as `http://127.0.0.1:5173/**` to **Redirect URLs**.
-5. Add the GitHub Pages address, such as `https://USERNAME.github.io/care-hours/**`, to **Redirect URLs**.
+5. Add the production application address, `https://app.hourboard.pl/**`, to **Redirect URLs**.
+6. Keep the GitHub Pages address, such as `https://USERNAME.github.io/care-hours/**`, during the domain transition if required.
 6. Restart `npm run dev` after changing `.env.local`.
 
 Users can create an account directly from the sign-in page. When email confirmation is enabled, Supabase sends a confirmation link. When it is disabled, the user receives a session immediately.
@@ -133,6 +136,8 @@ If a desktop client becomes useful later, DBeaver can connect using the connecti
 ## GitHub Pages deployment
 
 The workflow in `.github/workflows/deploy.yml` automatically tests, builds, and publishes the application after every push to `main`.
+
+The production application uses the custom domain `app.hourboard.pl`. The public landing page at `hourboard.pl` is a separate static site stored in `landing/` and hosted by Hostinger.
 
 Configure the GitHub repository as follows:
 

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="HourBoard pomaga niezależnym specjalistom zarządzać grafikiem, klientami, godzinami pracy i zarobkami." />
+    <meta name="theme-color" content="#176b52" />
+    <link rel="canonical" href="https://hourboard.pl/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>HourBoard — grafik, klienci i zarobki</title>
+    <style>
+      :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #17201c; background: #f5f3ed; }
+      * { box-sizing: border-box; }
+      body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 80% 0%, #dcebe4 0, transparent 32rem), #f5f3ed; }
+      a { color: inherit; }
+      .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+      header { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; }
+      .brand { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 800; text-decoration: none; }
+      .mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: #176b52; color: #fff; font-size: 13px; letter-spacing: .04em; }
+      select { border: 1px solid #d5d7d2; border-radius: 12px; padding: 9px 34px 9px 12px; background: rgba(255,255,255,.74); color: #344039; font: inherit; }
+      main { display: grid; min-height: calc(100vh - 150px); align-content: center; padding: 70px 0 110px; }
+      .hero { max-width: 780px; }
+      .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 22px; border: 1px solid #c7d9d0; border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.66); color: #176b52; font-size: 13px; font-weight: 750; }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: #e5a83d; }
+      h1 { max-width: 850px; margin: 0; color: #14211b; font-size: clamp(46px, 7vw, 82px); line-height: .98; letter-spacing: -.055em; }
+      .lead { max-width: 650px; margin: 28px 0 34px; color: #59635e; font-size: clamp(18px, 2vw, 21px); line-height: 1.6; }
+      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+      .primary { display: inline-flex; align-items: center; gap: 12px; border-radius: 14px; padding: 15px 20px; background: #176b52; color: white; font-weight: 750; text-decoration: none; box-shadow: 0 12px 30px rgba(23,107,82,.2); }
+      .primary:hover { background: #105b45; transform: translateY(-1px); }
+      .note { color: #7c8580; font-size: 14px; }
+      .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 70px; }
+      .feature { border: 1px solid rgba(36,55,46,.1); border-radius: 18px; padding: 20px; background: rgba(255,255,255,.58); }
+      .feature strong { display: block; margin-bottom: 7px; color: #26342d; }
+      .feature span { color: #6d7772; font-size: 14px; line-height: 1.5; }
+      footer { padding: 22px 0 30px; border-top: 1px solid rgba(36,55,46,.1); color: #7c8580; font-size: 13px; }
+      @media (max-width: 720px) { .shell { width: min(100% - 28px, 1120px); } header { padding: 18px 0; } main { padding: 55px 0 80px; } .features { grid-template-columns: 1fr; margin-top: 48px; } h1 { font-size: clamp(43px, 14vw, 64px); } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="/"><span class="mark">HB</span><span>HourBoard</span></a>
+        <label><span hidden>Language</span><select id="language" aria-label="Language"><option value="pl">PL</option><option value="en">EN</option><option value="ru">RU</option></select></label>
+      </header>
+      <main>
+        <section class="hero">
+          <p class="eyebrow"><span class="dot"></span><span data-t="eyebrow">Wersja testowa jest już dostępna</span></p>
+          <h1 data-t="title">Grafik, klienci i zarobki — w jednym miejscu.</h1>
+          <p class="lead" data-t="lead">HourBoard pomaga niezależnym specjalistom planować pracę z klientami, rejestrować godziny i wizyty oraz od razu widzieć miesięczne zarobki.</p>
+          <div class="actions">
+            <a class="primary" href="https://app.hourboard.pl"><span data-t="open">Otwórz aplikację</span><span aria-hidden="true">→</span></a>
+            <span class="note" data-t="note">Działa na komputerze i telefonie</span>
+          </div>
+          <div class="features">
+            <div class="feature"><strong data-t="f1Title">Klienci i grafik</strong><span data-t="f1Text">Cały miesiąc i wszyscy klienci w jednym przejrzystym widoku.</span></div>
+            <div class="feature"><strong data-t="f2Title">Godziny i wizyty</strong><span data-t="f2Text">Stawki godzinowe i stałe rozliczenia dla różnych rodzajów pracy.</span></div>
+            <div class="feature"><strong data-t="f3Title">Zarobki bez liczenia</strong><span data-t="f3Text">Automatyczne podsumowania według klientów, stawek i miesiąca.</span></div>
+          </div>
+        </section>
+      </main>
+      <footer>© <span id="year"></span> HourBoard</footer>
+    </div>
+    <script>
+      const messages = {
+        pl: { eyebrow: 'Wersja testowa jest już dostępna', title: 'Grafik, klienci i zarobki — w jednym miejscu.', lead: 'HourBoard pomaga niezależnym specjalistom planować pracę z klientami, rejestrować godziny i wizyty oraz od razu widzieć miesięczne zarobki.', open: 'Otwórz aplikację', note: 'Działa na komputerze i telefonie', f1Title: 'Klienci i grafik', f1Text: 'Cały miesiąc i wszyscy klienci w jednym przejrzystym widoku.', f2Title: 'Godziny i wizyty', f2Text: 'Stawki godzinowe i stałe rozliczenia dla różnych rodzajów pracy.', f3Title: 'Zarobki bez liczenia', f3Text: 'Automatyczne podsumowania według klientów, stawek i miesiąca.' },
+        en: { eyebrow: 'The test version is now available', title: 'Schedule, clients and earnings — all in one place.', lead: 'HourBoard helps independent professionals plan client work, record hours and visits, and see monthly earnings without manual calculations.', open: 'Open the app', note: 'Works on desktop and mobile', f1Title: 'Clients and schedule', f1Text: 'Your whole month and every client in one clear view.', f2Title: 'Hours and visits', f2Text: 'Hourly rates and fixed payments for different kinds of work.', f3Title: 'Automatic earnings', f3Text: 'Instant totals by client, rate and month.' },
+        ru: { eyebrow: 'Тестовая версия уже доступна', title: 'Расписание, клиенты и заработок — в одном месте.', lead: 'HourBoard помогает независимым специалистам планировать работу с клиентами, записывать часы и визиты и сразу видеть заработок за месяц.', open: 'Открыть приложение', note: 'Работает на компьютере и телефоне', f1Title: 'Клиенты и расписание', f1Text: 'Весь месяц и все клиенты в одном понятном представлении.', f2Title: 'Часы и визиты', f2Text: 'Почасовые ставки и фиксированная оплата для разных видов работы.', f3Title: 'Заработок без подсчётов', f3Text: 'Автоматические итоги по клиентам, тарифам и месяцам.' }
+      };
+      const select = document.querySelector('#language');
+      const preferred = navigator.language.toLowerCase().startsWith('ru') ? 'ru' : navigator.language.toLowerCase().startsWith('pl') ? 'pl' : 'en';
+      function setLanguage(language) { document.documentElement.lang = language; select.value = language; document.querySelectorAll('[data-t]').forEach((node) => { node.textContent = messages[language][node.dataset.t]; }); }
+      select.addEventListener('change', () => setLanguage(select.value));
+      document.querySelector('#year').textContent = new Date().getFullYear();
+      setLanguage(preferred);
+    </script>
+  </body>
+</html>
