@@ -1,69 +1,78 @@
 # Care Hours
 
-Облачный рабочий табель по подопечным: React/Vite frontend на GitHub Pages, Supabase Auth и PostgreSQL для аккаунтов и данных.
+Care Hours is a cloud-based work timesheet for recording client visits, working hours, and rates. The frontend is built with React, TypeScript, and Vite and deployed to GitHub Pages. Supabase provides authentication and the PostgreSQL database.
 
-Product specification находится рядом с проектом: `../care-hours-product-spec.md`.
+Live application: [604karev.github.io/care-hours](https://604karev.github.io/care-hours/)
 
-## Что уже подготовлено
+The product specification is stored next to the project at `../care-hours-product-spec.md`.
 
-- React 19 + TypeScript + Vite;
-- регистрация и вход через Supabase Auth;
-- русский, польский и английский интерфейс с автоопределением языка браузера;
-- справочник клиентов с планом часов и визитов;
-- цветные почасовые и фиксированные тарифы;
-- месячная таблица с несколькими визитами в одной клетке;
-- автоматические итоги по клиентам, тарифам и всему месяцу;
-- тарифные snapshots: прошлые суммы не меняются после редактирования тарифа;
-- безопасная конфигурация через `.env.local`;
-- первоначальная PostgreSQL-схема;
-- Row Level Security по рабочим областям;
-- тесты, lint и production build;
-- автоматический deployment на GitHub Pages.
+## Features
 
-## Локальный запуск
+- account registration and sign-in with Supabase Auth;
+- Russian, Polish, and English interfaces with automatic browser-language detection;
+- manual language selection saved in the browser;
+- a client directory with planned monthly hours and visits;
+- colour-coded hourly and per-visit rates;
+- a monthly timesheet with multiple visits in one cell;
+- automatic totals by client, rate, and month;
+- rate snapshots, so historical amounts do not change when a rate is edited;
+- separate workspaces and Row Level Security for data isolation;
+- automated linting, tests, production builds, and GitHub Pages deployment.
 
-Требуется Node.js 20 или новее. В папке проекта:
+## Tech stack
+
+- React 19;
+- TypeScript;
+- Vite;
+- Supabase Auth;
+- PostgreSQL and Row Level Security;
+- Vitest and Testing Library;
+- GitHub Actions and GitHub Pages.
+
+## Local development
+
+Node.js 20 or newer is required. From the project directory, run:
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Vite напечатает локальный адрес, обычно `http://localhost:5173`. Пока Supabase не подключён, приложение покажет экран подготовки вместо формы входа.
+Vite will print the local URL, usually `http://localhost:5173`. If Supabase is not configured, the application displays a setup screen instead of the sign-in form.
 
-При первом открытии язык интерфейса определяется по языку браузера. Поддерживаются русский, польский и английский. Ручной выбор сохраняется в браузере и используется при следующих открытиях приложения.
+On the first visit, the interface language is selected from the browser locale. Russian, Polish, and English are supported. A manual selection is saved in the browser and reused on subsequent visits.
 
-Проверки перед commit:
+Run the following checks before committing:
 
 ```powershell
 npm run lint
-npm run test
+npm test
 npm run build
 ```
 
-## Подключение Supabase
+## Supabase setup
 
-### 1. Создать облачный проект
+### 1. Create a cloud project
 
-1. Зарегистрироваться на `https://supabase.com`.
-2. Создать организацию и новый проект на Free plan.
-3. Выбрать ближайший доступный регион в ЕС.
-4. Сохранить пароль базы в менеджере паролей. Не отправлять его в чат и не добавлять в Git.
+1. Create an account at [supabase.com](https://supabase.com/).
+2. Create an organisation and a new project on the Free plan.
+3. Select the nearest available EU region.
+4. Store the database password in a password manager. Never send it in chat or commit it to Git.
 
-### 2. Создать локальный env-файл
+### 2. Configure local environment variables
 
-В Supabase Dashboard открыть настройки/API и найти:
+Open the project API settings in the Supabase Dashboard and copy:
 
 - Project URL;
 - Publishable key.
 
-Скопировать `.env.example` в `.env.local`:
+Create `.env.local` from the example:
 
 ```powershell
 Copy-Item .env.example .env.local
 ```
 
-Заполнить только эти значения:
+Set only the following values:
 
 ```dotenv
 VITE_SUPABASE_URL=https://PROJECT_REF.supabase.co
@@ -71,19 +80,19 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 VITE_BASE_PATH=/
 ```
 
-Publishable key предназначен для frontend. Secret/service key в `.env.local` с префиксом `VITE_` добавлять запрещено.
+The publishable key is intended for frontend applications. Never expose a secret or service-role key through a variable prefixed with `VITE_`.
 
-### 3. Создать схему базы
+### 3. Create the database schema
 
-В Supabase Dashboard открыть SQL Editor, скопировать содержимое файла:
+Open the SQL Editor in the Supabase Dashboard, copy the contents of:
 
 ```text
 supabase/migrations/20260829180000_initial_schema.sql
 ```
 
-и выполнить SQL один раз. Миграция создаст таблицы, функцию первой рабочей области и RLS policies.
+Run the SQL once. The migration creates the tables, the personal-workspace function, and the Row Level Security policies.
 
-В дальнейшем миграции можно применять через локально установленный CLI:
+Future migrations can be applied with the locally installed Supabase CLI:
 
 ```powershell
 npx supabase login
@@ -91,59 +100,67 @@ npx supabase link --project-ref PROJECT_REF
 npx supabase db push
 ```
 
-Для этих удалённых команд Docker не нужен. Docker требуется только для запуска полного локального Supabase stack, который на первом этапе не используется.
+Docker is not required for these remote commands. It is only needed when running the complete Supabase stack locally, which this project does not currently require.
 
-### 4. Настроить регистрацию и вход
+### 4. Configure registration and sign-in
 
-1. В Authentication → Providers → Email оставить включённым `Allow new users to sign up`.
-2. Рекомендуется оставить включённым подтверждение email (`Confirm email`).
-3. В Authentication → URL Configuration указать адрес опубликованного приложения как `Site URL`.
-4. Добавить локальный адрес, например `http://127.0.0.1:5173/**`, в `Redirect URLs`.
-5. Добавить адрес GitHub Pages, например `https://USERNAME.github.io/care-hours/**`, в `Redirect URLs`.
-6. Перезапустить `npm run dev` после изменения `.env.local`.
+1. In **Authentication → Providers → Email**, enable **Allow new users to sign up**.
+2. Keeping **Confirm email** enabled is recommended.
+3. In **Authentication → URL Configuration**, set the deployed application URL as the **Site URL**.
+4. Add a local address such as `http://127.0.0.1:5173/**` to **Redirect URLs**.
+5. Add the GitHub Pages address, such as `https://USERNAME.github.io/care-hours/**`, to **Redirect URLs**.
+6. Restart `npm run dev` after changing `.env.local`.
 
-Пользователь может создать аккаунт прямо на экране входа. Если подтверждение email включено, после регистрации ему придёт письмо со ссылкой. Если оно выключено, вход произойдёт сразу.
+Users can create an account directly from the sign-in page. When email confirmation is enabled, Supabase sends a confirmation link. When it is disabled, the user receives a session immediately.
 
-После первой авторизованной загрузки приложение сможет вызвать `ensure_personal_workspace()` и получить отдельную рабочую область пользователя.
+After the first authenticated load, the application calls `ensure_personal_workspace()` to create or retrieve a private workspace for the user.
 
-## Как смотреть базу
+## Database access
 
-Отдельная программа не обязательна:
+A separate database client is not required:
 
-- Table Editor показывает таблицы и строки почти как spreadsheet;
-- SQL Editor позволяет выполнять и сохранять SQL-запросы;
-- Authentication → Users показывает аккаунты.
+- **Table Editor** displays tables and rows in a spreadsheet-like interface;
+- **SQL Editor** runs and saves SQL queries;
+- **Authentication → Users** displays registered accounts.
 
-Если позднее понадобится desktop-клиент, можно установить DBeaver и подключиться через строку из кнопки `Connect` в Supabase Dashboard. Для первой версии Dashboard проще и безопаснее.
+If a desktop client becomes useful later, DBeaver can connect using the connection string available from the **Connect** button in the Supabase Dashboard. For the current version, the Dashboard is simpler and safer.
 
-## GitHub Pages
+## GitHub Pages deployment
 
-Workflow `.github/workflows/deploy.yml` автоматически проверяет и публикует приложение после push в `main`.
+The workflow in `.github/workflows/deploy.yml` automatically tests, builds, and publishes the application after every push to `main`.
 
-В GitHub repository нужно:
+Configure the GitHub repository as follows:
 
-1. Settings → Pages → Source → GitHub Actions.
-2. Settings → Secrets and variables → Actions → Variables.
-3. Добавить `VITE_SUPABASE_URL` и `VITE_SUPABASE_PUBLISHABLE_KEY` как repository variables.
+1. Open **Settings → Pages** and select **GitHub Actions** as the source.
+2. Open **Settings → Secrets and variables → Actions → Variables**.
+3. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as repository variables.
 
-Пользовательские данные не попадают в GitHub. Они загружаются из Supabase только после входа и проверки RLS.
+User data is never stored in GitHub. It is loaded from Supabase only after authentication and Row Level Security checks.
 
-## Редактор
+## Editor
 
-Рекомендуется Visual Studio Code. Проект не привязан к конкретной IDE: его также можно редактировать в WebStorm или другом редакторе. Для просмотра результата IDE не нужна — достаточно `npm run dev` и браузера.
+Visual Studio Code is recommended, but the project is not tied to a particular IDE. WebStorm and other editors work as well. An IDE is not required to view the application; `npm run dev` and a browser are sufficient.
 
-## Структура
+## Project structure
 
 ```text
 src/
-  features/auth/       регистрация и вход пользователя
-  features/clients/    карточки и формы клиентов
-  features/rates/      тарифы, цвета и ставки
-  features/month/      месячная таблица и визиты
-  features/workspace/  загрузка данных, типы и расчёты
-  lib/supabase.ts      клиент Supabase
-  test/                тестовый setup
+  features/auth/       registration and sign-in
+  features/clients/    client cards and forms
+  features/rates/      rates, colours, and payment settings
+  features/month/      monthly timesheet and visits
+  features/workspace/  data loading, types, and calculations
+  i18n/                translations and language selection
+  lib/supabase.ts      Supabase client
+  test/                test setup
 supabase/
-  migrations/          версия схемы PostgreSQL и RLS
+  migrations/          versioned PostgreSQL schema and RLS
 .github/workflows/     GitHub Pages deployment
 ```
+
+## Security notes
+
+- Do not commit `.env.local`.
+- Never put the Supabase secret or service-role key in frontend code.
+- The publishable key is safe to expose when Row Level Security policies are correctly enabled.
+- Each authenticated user can access only their own workspace data.
