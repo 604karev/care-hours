@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { LoginPage } from './features/auth/LoginPage'
+import { UpdatePasswordPage } from './features/auth/UpdatePasswordPage'
 import { WorkspaceApp } from './features/workspace/WorkspaceApp'
 import { I18nProvider } from './i18n/I18nProvider'
 import { useI18n } from './i18n/useI18n'
@@ -35,6 +36,9 @@ function ConnectedApp() {
   const [isLoading, setIsLoading] = useState(true)
   const [workspaceId, setWorkspaceId] = useState<string | null>(null)
   const [workspaceError, setWorkspaceError] = useState<string | null>(null)
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(() => (
+    window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery')
+  ))
 
   useEffect(() => {
     if (!supabase) return
@@ -44,9 +48,13 @@ function ConnectedApp() {
       setIsLoading(false)
     })
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession)
-      if (!nextSession) setWorkspaceId(null)
+      if (event === 'PASSWORD_RECOVERY') setIsPasswordRecovery(true)
+      if (!nextSession) {
+        setWorkspaceId(null)
+        setIsPasswordRecovery(false)
+      }
       setIsLoading(false)
     })
 
@@ -54,19 +62,27 @@ function ConnectedApp() {
   }, [])
 
   useEffect(() => {
-    if (!session || !supabase) return
+    if (!session || !supabase || isPasswordRecovery) return
 
     void supabase.rpc('ensure_personal_workspace').then(({ data, error }) => {
       setWorkspaceError(error?.message ?? null)
       setWorkspaceId(error ? null : data as string)
     })
-  }, [session])
+  }, [isPasswordRecovery, session])
 
   if (isLoading) {
     return <main className="loading-screen">{t('app.loading')}</main>
   }
 
   if (!session) return <LoginPage />
+
+  if (isPasswordRecovery) {
+    return <UpdatePasswordPage onComplete={() => {
+      const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
+      window.history.replaceState({}, document.title, baseUrl.pathname)
+      setIsPasswordRecovery(false)
+    }} />
+  }
 
   if (workspaceError) {
     return (

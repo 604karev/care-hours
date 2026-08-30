@@ -6,6 +6,7 @@ import { I18nProvider } from '../../i18n/I18nProvider'
 const authMocks = vi.hoisted(() => ({
   signInWithPassword: vi.fn(),
   signUp: vi.fn(),
+  resetPasswordForEmail: vi.fn(),
 }))
 
 vi.mock('../../lib/supabase', () => ({
@@ -18,6 +19,7 @@ describe('LoginPage', () => {
   beforeEach(() => {
     authMocks.signInWithPassword.mockReset()
     authMocks.signUp.mockReset()
+    authMocks.resetPasswordForEmail.mockReset()
   })
 
   it('signs in with email and password', async () => {
@@ -68,5 +70,21 @@ describe('LoginPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Witaj ponownie' })).toBeInTheDocument()
     expect(window.localStorage.getItem('care-hours-language')).toBe('pl')
+  })
+
+  it('requests a password recovery email', async () => {
+    authMocks.resetPasswordForEmail.mockResolvedValue({ error: null })
+    renderPage()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Забыли пароль?' }))
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: ' wife@example.com ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Отправить ссылку' }))
+
+    await waitFor(() => {
+      expect(authMocks.resetPasswordForEmail).toHaveBeenCalledWith('wife@example.com', {
+        redirectTo: expect.any(String),
+      })
+    })
+    expect(await screen.findByText('Письмо отправлено')).toBeInTheDocument()
   })
 })

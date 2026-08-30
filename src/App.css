@@ -137,6 +137,44 @@
   margin-top: 28px;
 }
 
+.forgot-button,
+.auth-back-button {
+  justify-self: end;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--brand);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.forgot-button {
+  margin-top: -7px;
+}
+
+.auth-back-button {
+  justify-self: center;
+  margin-top: 2px;
+}
+
+.auth-complete {
+  text-align: center;
+}
+
+.auth-complete h1 {
+  margin-top: 24px;
+}
+
+.auth-complete p {
+  margin: 14px 0 24px;
+}
+
+.auth-complete .primary-button {
+  width: 100%;
+}
+
 .field {
   display: grid;
   gap: 7px;

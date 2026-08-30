@@ -9,6 +9,7 @@ The product specification is stored next to the project at `../care-hours-produc
 ## Features
 
 - account registration and sign-in with Supabase Auth;
+- password recovery by email;
 - Russian, Polish, and English interfaces with automatic browser-language detection;
 - manual language selection saved in the browser;
 - a client directory with planned monthly hours and visits;
