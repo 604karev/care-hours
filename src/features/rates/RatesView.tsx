@@ -11,9 +11,11 @@ export interface ServiceTypeInput {
   text_color: string
   rate_unit: RateUnit
   rate_amount: number
+  currency_code: string
 }
 
 const palette = ['#8FC47C', '#FFE34F', '#EC8E8E', '#8CB9E8', '#C7A7E8', '#F2AE68']
+const currencies = ['PLN', 'EUR', 'USD', 'BYN'] as const
 
 function readableText(background: string) {
   const hex = background.replace('#', '')
@@ -38,6 +40,7 @@ function RateForm({
   const [color, setColor] = useState(serviceType?.background_color ?? palette[0])
   const [rateUnit, setRateUnit] = useState<RateUnit>(serviceType?.rate_unit ?? 'hourly')
   const [amount, setAmount] = useState(String(serviceType?.rate_amount ?? ''))
+  const [currency, setCurrency] = useState(serviceType?.currency_code ?? 'PLN')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -53,6 +56,7 @@ function RateForm({
         text_color: readableText(color),
         rate_unit: rateUnit,
         rate_amount: Number(amount),
+        currency_code: currency,
       })
       onClose()
     } catch (caughtError) {
@@ -89,7 +93,7 @@ function RateForm({
             <input aria-label={t('rates.customColor')} type="color" value={color} onChange={(event) => setColor(event.target.value)} />
           </div>
         </fieldset>
-        <label className="field">
+        <label className="field wide-field">
           {t('rates.calculation')}
           <select value={rateUnit} onChange={(event) => setRateUnit(event.target.value as RateUnit)}>
             <option value="hourly">{t('rates.hourly')}</option>
@@ -100,9 +104,15 @@ function RateForm({
           {t('rates.amount')}
           <input required min="0" step="0.01" type="number" value={amount} onChange={(event) => setAmount(event.target.value)} />
         </label>
+        <label className="field">
+          {t('rates.currency')}
+          <select value={currency} onChange={(event) => setCurrency(event.target.value)}>
+            {currencies.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </label>
         <div className="rate-preview wide-field" style={{ background: color, color: readableText(color) }}>
           <strong>{name || t('rates.example')}</strong>
-          <span>{formatMoney(Number(amount || 0), 'PLN', language)} {rateUnit === 'hourly' ? t('rates.perHourShort') : t('rates.perVisitShort')}</span>
+          <span>{formatMoney(Number(amount || 0), currency, language)} {rateUnit === 'hourly' ? t('rates.perHourShort') : t('rates.perVisitShort')}</span>
         </div>
         {error && <p className="form-error wide-field">{error}</p>}
         <footer className="form-actions wide-field">

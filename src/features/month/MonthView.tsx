@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { displayTime, formatDuration, formatMoney, monthDays, monthLabel, shiftMonth, toIsoDate } from '../workspace/date'
+import { displayTime, formatDuration, formatMoney, monthDays, monthLabel, shiftMonth, sumAmountsByCurrency, toIsoDate } from '../workspace/date'
 import type { AppSection, Client, ServiceType, Visit } from '../workspace/types'
 import { useI18n } from '../../i18n/useI18n'
 
@@ -56,15 +56,22 @@ export function MonthView({
 
   const serviceTotals = useMemo(() => activeServices.map((service) => {
     const serviceVisits = visits.filter((visit) => visit.service_type_id === service.id)
+    const amounts = sumAmountsByCurrency(serviceVisits.map((visit) => ({
+      amount: Number(visit.amount_snapshot),
+      currency: visit.currency_code_snapshot,
+    })))
     return {
       service,
       minutes: serviceVisits.reduce((sum, visit) => sum + visit.duration_minutes, 0),
-      amount: serviceVisits.reduce((sum, visit) => sum + Number(visit.amount_snapshot), 0),
+      amounts: amounts.length ? amounts : [{ currency: service.currency_code, amount: 0 }],
     }
   }), [activeServices, visits])
 
   const totalMinutes = visits.reduce((sum, visit) => sum + visit.duration_minutes, 0)
-  const totalAmount = visits.reduce((sum, visit) => sum + Number(visit.amount_snapshot), 0)
+  const totalAmounts = sumAmountsByCurrency(visits.map((visit) => ({
+    amount: Number(visit.amount_snapshot),
+    currency: visit.currency_code_snapshot,
+  })))
 
   if (!activeServices.length || !activeClients.length) {
     return (
@@ -99,13 +106,23 @@ export function MonthView({
       </header>
 
       <div className="summary-strip">
-        {serviceTotals.map(({ service, minutes, amount }) => (
+        {serviceTotals.map(({ service, minutes, amounts }) => (
           <article className="summary-card" key={service.id}>
             <span className="rate-swatch" style={{ background: service.background_color }} />
-            <div><strong>{service.name}</strong><span>{formatDuration(minutes, language)} · {formatMoney(amount, service.currency_code, language)}</span></div>
+            <div>
+              <strong>{service.name}</strong>
+              <span>{formatDuration(minutes, language)}</span>
+              {amounts.map(({ currency, amount }) => <span key={currency}>{formatMoney(amount, currency, language)}</span>)}
+            </div>
           </article>
         ))}
-        <article className="summary-card total-card"><div><strong>{t('month.total')}</strong><span>{visits.length} {t('unit.visits')} · {formatDuration(totalMinutes, language)} · {formatMoney(totalAmount, 'PLN', language)}</span></div></article>
+        <article className="summary-card total-card">
+          <div>
+            <strong>{t('month.total')}</strong>
+            <span>{visits.length} {t('unit.visits')} · {formatDuration(totalMinutes, language)}</span>
+            {totalAmounts.map(({ currency, amount }) => <span key={currency}>{formatMoney(amount, currency, language)}</span>)}
+          </div>
+        </article>
       </div>
 
       <div className={compact ? 'calendar-scroll compact-calendar' : 'calendar-scroll'}>

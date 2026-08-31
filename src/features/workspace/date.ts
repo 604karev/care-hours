@@ -64,6 +64,22 @@ export function formatMoney(value: number, currency = 'PLN', language: Language 
   }).format(value)
 }
 
+export interface CurrencyAmount {
+  currency: string
+  amount: number
+}
+
+export function sumAmountsByCurrency(values: CurrencyAmount[]) {
+  const totals = new Map<string, number>()
+  values.forEach(({ currency, amount }) => {
+    totals.set(currency, (totals.get(currency) ?? 0) + Number(amount))
+  })
+  return Array.from(totals, ([currency, amount]) => ({
+    currency,
+    amount: Math.round(amount * 100) / 100,
+  })).sort((left, right) => left.currency.localeCompare(right.currency))
+}
+
 export function displayTime(value: string) {
   return value.slice(0, 5)
 }

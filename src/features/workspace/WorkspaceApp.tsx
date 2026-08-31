@@ -4,7 +4,7 @@ import { MonthView, type VisitSelection } from '../month/MonthView'
 import { VisitDialog, type VisitInput } from '../month/VisitDialog'
 import { RatesView, type ServiceTypeInput } from '../rates/RatesView'
 import { calculateVisitAmount, monthBounds, timeToMinutes } from './date'
-import type { AppSection, Client, ServiceType, Visit, Workspace } from './types'
+import type { AppSection, Client, ServiceType, Visit } from './types'
 import { supabase } from '../../lib/supabase'
 import { useI18n } from '../../i18n/useI18n'
 import { LanguageSwitcher } from '../../i18n/LanguageSwitcher'
@@ -25,7 +25,6 @@ export function WorkspaceApp({
   const { t } = useI18n()
   const [section, setSection] = useState<AppSection>('month')
   const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-  const [workspace, setWorkspace] = useState<Workspace | null>(null)
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [visits, setVisits] = useState<Visit[]>([])
@@ -45,7 +44,7 @@ export function WorkspaceApp({
 
     const load = async () => {
       const [workspaceResult, ratesResult, clientsResult, visitsResult] = await Promise.all([
-        client.from('workspaces').select('id,name,currency_code').eq('id', workspaceId).single(),
+        client.from('workspaces').select('id').eq('id', workspaceId).single(),
         client.from('service_types').select('*').eq('workspace_id', workspaceId).order('sort_order').order('created_at'),
         client.from('clients').select('*').eq('workspace_id', workspaceId).order('sort_order').order('created_at'),
         client.from('visits').select('*').eq('workspace_id', workspaceId).gte('visit_date', bounds.start).lte('visit_date', bounds.end).order('start_time'),
@@ -55,7 +54,6 @@ export function WorkspaceApp({
       if (firstError) throw firstError
       if (!active) return
 
-      setWorkspace(workspaceResult.data as Workspace)
       setServiceTypes((ratesResult.data ?? []).map((item) => ({ ...item, rate_amount: Number(item.rate_amount) })) as ServiceType[])
       setClients((clientsResult.data ?? []) as Client[])
       setVisits((visitsResult.data ?? []).map((item) => ({
@@ -95,7 +93,7 @@ export function WorkspaceApp({
 
   const saveServiceType = async (serviceTypeId: string | null, value: ServiceTypeInput) => {
     if (!supabase) return
-    const payload = { ...value, workspace_id: workspaceId, currency_code: workspace?.currency_code ?? 'PLN' }
+    const payload = { ...value, workspace_id: workspaceId }
     const result = serviceTypeId
       ? await supabase.from('service_types').update(payload).eq('id', serviceTypeId).eq('workspace_id', workspaceId)
       : await supabase.from('service_types').insert({ ...payload, sort_order: serviceTypes.length })
