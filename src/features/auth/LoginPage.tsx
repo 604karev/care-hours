@@ -206,6 +206,10 @@ export function LoginPage() {
             </button>
           )}
         </form>
+        <p className="privacy-notice">
+          {t('auth.privacyText')}{' '}
+          <a href="https://hourboard.pl/privacy/" rel="noreferrer" target="_blank">{t('common.privacyPolicy')}</a>
+        </p>
       </section>
     </main>
   )

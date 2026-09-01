@@ -150,6 +150,21 @@
   cursor: pointer;
 }
 
+.privacy-notice {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.privacy-notice a,
+.sidebar-privacy-link {
+  color: var(--brand);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
 .forgot-button {
   margin-top: -7px;
 }
@@ -446,6 +461,11 @@
 
 .sidebar-account .text-button {
   justify-self: start;
+}
+
+.sidebar-privacy-link {
+  width: fit-content;
+  font-size: 12px;
 }
 
 .workspace-main {

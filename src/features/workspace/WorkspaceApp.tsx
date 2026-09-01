@@ -178,7 +178,12 @@ export function WorkspaceApp({
             </button>
           ))}
         </nav>
-        <div className="sidebar-account"><LanguageSwitcher /><span title={email}>{email}</span><button className="text-button" type="button" onClick={() => void onSignOut()}>{t('app.signOut')}</button></div>
+        <div className="sidebar-account">
+          <LanguageSwitcher />
+          <span title={email}>{email}</span>
+          <a className="sidebar-privacy-link" href="https://hourboard.pl/privacy/" rel="noreferrer" target="_blank">{t('common.privacyPolicy')}</a>
+          <button className="text-button" type="button" onClick={() => void onSignOut()}>{t('app.signOut')}</button>
+        </div>
       </aside>
 
       <main className="workspace-main">
