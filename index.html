@@ -32,7 +32,8 @@
       .feature { border: 1px solid rgba(36,55,46,.1); border-radius: 18px; padding: 20px; background: rgba(255,255,255,.58); }
       .feature strong { display: block; margin-bottom: 7px; color: #26342d; }
       .feature span { color: #6d7772; font-size: 14px; line-height: 1.5; }
-      footer { padding: 22px 0 30px; border-top: 1px solid rgba(36,55,46,.1); color: #7c8580; font-size: 13px; }
+      footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; padding: 22px 0 30px; border-top: 1px solid rgba(36,55,46,.1); color: #7c8580; font-size: 13px; }
+      footer a { color: #56615b; text-underline-offset: 3px; }
       @media (max-width: 720px) { .shell { width: min(100% - 28px, 1120px); } header { padding: 18px 0; } main { padding: 55px 0 80px; } .features { grid-template-columns: 1fr; margin-top: 48px; } h1 { font-size: clamp(43px, 14vw, 64px); } }
     </style>
   </head>
@@ -58,13 +59,13 @@
           </div>
         </section>
       </main>
-      <footer>© <span id="year"></span> HourBoard</footer>
+      <footer><span>© <span id="year"></span> HourBoard</span><a href="/privacy/" data-t="privacy">Polityka prywatności</a></footer>
     </div>
     <script>
       const messages = {
-        pl: { eyebrow: 'Wersja testowa jest już dostępna', title: 'Grafik, klienci i zarobki — w jednym miejscu.', lead: 'HourBoard pomaga niezależnym specjalistom planować pracę z klientami, rejestrować godziny i wizyty oraz od razu widzieć miesięczne zarobki.', open: 'Otwórz aplikację', note: 'Działa na komputerze i telefonie', f1Title: 'Klienci i grafik', f1Text: 'Cały miesiąc i wszyscy klienci w jednym przejrzystym widoku.', f2Title: 'Godziny i wizyty', f2Text: 'Stawki godzinowe i stałe rozliczenia dla różnych rodzajów pracy.', f3Title: 'Zarobki bez liczenia', f3Text: 'Automatyczne podsumowania według klientów, stawek i miesiąca.' },
-        en: { eyebrow: 'The test version is now available', title: 'Schedule, clients and earnings — all in one place.', lead: 'HourBoard helps independent professionals plan client work, record hours and visits, and see monthly earnings without manual calculations.', open: 'Open the app', note: 'Works on desktop and mobile', f1Title: 'Clients and schedule', f1Text: 'Your whole month and every client in one clear view.', f2Title: 'Hours and visits', f2Text: 'Hourly rates and fixed payments for different kinds of work.', f3Title: 'Automatic earnings', f3Text: 'Instant totals by client, rate and month.' },
-        ru: { eyebrow: 'Тестовая версия уже доступна', title: 'Расписание, клиенты и заработок — в одном месте.', lead: 'HourBoard помогает независимым специалистам планировать работу с клиентами, записывать часы и визиты и сразу видеть заработок за месяц.', open: 'Открыть приложение', note: 'Работает на компьютере и телефоне', f1Title: 'Клиенты и расписание', f1Text: 'Весь месяц и все клиенты в одном понятном представлении.', f2Title: 'Часы и визиты', f2Text: 'Почасовые ставки и фиксированная оплата для разных видов работы.', f3Title: 'Заработок без подсчётов', f3Text: 'Автоматические итоги по клиентам, тарифам и месяцам.' }
+        pl: { eyebrow: 'Wersja testowa jest już dostępna', title: 'Grafik, klienci i zarobki — w jednym miejscu.', lead: 'HourBoard pomaga niezależnym specjalistom planować pracę z klientami, rejestrować godziny i wizyty oraz od razu widzieć miesięczne zarobki.', open: 'Otwórz aplikację', note: 'Działa na komputerze i telefonie', f1Title: 'Klienci i grafik', f1Text: 'Cały miesiąc i wszyscy klienci w jednym przejrzystym widoku.', f2Title: 'Godziny i wizyty', f2Text: 'Stawki godzinowe i stałe rozliczenia dla różnych rodzajów pracy.', f3Title: 'Zarobki bez liczenia', f3Text: 'Automatyczne podsumowania według klientów, stawek i miesiąca.', privacy: 'Polityka prywatności' },
+        en: { eyebrow: 'The test version is now available', title: 'Schedule, clients and earnings — all in one place.', lead: 'HourBoard helps independent professionals plan client work, record hours and visits, and see monthly earnings without manual calculations.', open: 'Open the app', note: 'Works on desktop and mobile', f1Title: 'Clients and schedule', f1Text: 'Your whole month and every client in one clear view.', f2Title: 'Hours and visits', f2Text: 'Hourly rates and fixed payments for different kinds of work.', f3Title: 'Automatic earnings', f3Text: 'Instant totals by client, rate and month.', privacy: 'Privacy Policy' },
+        ru: { eyebrow: 'Тестовая версия уже доступна', title: 'Расписание, клиенты и заработок — в одном месте.', lead: 'HourBoard помогает независимым специалистам планировать работу с клиентами, записывать часы и визиты и сразу видеть заработок за месяц.', open: 'Открыть приложение', note: 'Работает на компьютере и телефоне', f1Title: 'Клиенты и расписание', f1Text: 'Весь месяц и все клиенты в одном понятном представлении.', f2Title: 'Часы и визиты', f2Text: 'Почасовые ставки и фиксированная оплата для разных видов работы.', f3Title: 'Заработок без подсчётов', f3Text: 'Автоматические итоги по клиентам, тарифам и месяцам.', privacy: 'Политика конфиденциальности' }
       };
       const select = document.querySelector('#language');
       const preferred = navigator.language.toLowerCase().startsWith('ru') ? 'ru' : navigator.language.toLowerCase().startsWith('pl') ? 'pl' : 'en';
