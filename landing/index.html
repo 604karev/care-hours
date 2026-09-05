@@ -19,7 +19,26 @@
       .mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: #176b52; color: #fff; font-size: 13px; letter-spacing: .04em; }
       select { border: 1px solid #d5d7d2; border-radius: 12px; padding: 9px 34px 9px 12px; background: rgba(255,255,255,.74); color: #344039; font: inherit; }
       main { display: grid; min-height: calc(100vh - 150px); align-content: center; padding: 70px 0 110px; }
-      .hero { max-width: 780px; }
+      .hero { max-width: 850px; }
+      .showcase { margin-top: 64px; }
+      .showcase h2, .closing h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -.035em; margin: 0 0 16px; }
+      .showcase p { color: #59635e; line-height: 1.7; max-width: 680px; }
+      .preview { display: block; width: 100%; padding: 0; border: 1px solid #d5d7d2; border-radius: 18px; overflow: hidden; background: #fff; cursor: zoom-in; box-shadow: 0 18px 50px #173b2510; }
+      .preview img { display: block; width: 100%; height: auto; }
+      figure { margin: 24px 0 0; }
+      figcaption { margin: 12px 0; font-size: 13px; color: #59635e; }
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; }
+      .step { min-width: 0; }
+      .step-number { color: #176b52; font-weight: 800; font-size: 14px; }
+      .step h3 { font-size: 23px; margin: 12px 0; }
+      .step p { font-size: 15px; min-height: 100px; }
+      .closing { margin-top: 72px; padding: 36px; border-radius: 22px; background: #e4eee7; }
+      .closing p { color: #59635e; line-height: 1.7; }
+      dialog { width: min(96vw, 1920px); max-width: none; max-height: 94vh; padding: 48px 12px 12px; border: 0; border-radius: 16px; background: #fff; }
+      dialog::backdrop { background: #12251de0; }
+      dialog img { width: 100%; display: block; }
+      .close-preview { position: absolute; top: 8px; right: 12px; border: 0; border-radius: 8px; background: #edf2ee; width: 34px; height: 34px; font-size: 24px; cursor: pointer; }
+      @media(max-width:720px) { .steps { grid-template-columns: 1fr; gap: 36px; } .step p { min-height: 0; } .closing { padding: 24px; } }
       .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 22px; border: 1px solid #c7d9d0; border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.66); color: #176b52; font-size: 13px; font-weight: 750; }
       .dot { width: 7px; height: 7px; border-radius: 50%; background: #e5a83d; }
       h1 { max-width: 850px; margin: 0; color: #14211b; font-size: clamp(46px, 7vw, 82px); line-height: .98; letter-spacing: -.055em; }
@@ -58,7 +77,22 @@
             <div class="feature"><strong data-t="f3Title">Zarobki bez liczenia</strong><span data-t="f3Text">Automatyczne podsumowania według klientów, stawek i miesiąca.</span></div>
           </div>
         </section>
+        <section class="showcase" aria-labelledby="calendar-title">
+          <h2 id="calendar-title" data-t="calendarTitle">Zobacz swój miesiąc w jednym miejscu.</h2>
+          <p data-t="calendarText">Wizyty oznaczone kolorami, godziny przy każdym kliencie i automatyczne podsumowania. Różne waluty mają osobne sumy.</p>
+          <figure><button class="preview" type="button"><img src="/images/month.png" width="1919" height="909" alt="HourBoard monthly calendar with demo visits and separate PLN and EUR totals" fetchpriority="high"></button><figcaption data-t="demoCaption">Przykładowe dane · interfejs po angielsku · kliknij, aby powiększyć</figcaption></figure>
+        </section>
+        <section class="showcase" aria-labelledby="steps-title">
+          <h2 id="steps-title" data-t="stepsTitle">Od pierwszej stawki do gotowego grafiku.</h2>
+          <div class="steps">
+            <article class="step"><span class="step-number">01</span><h3 data-t="step1Title">Ustal swoje stawki</h3><p data-t="step1Text">Wybierz kwotę, walutę i kolor. Rozliczaj pracę godzinowo lub za wizytę.</p><button class="preview" type="button"><img src="/images/rates.png" width="1919" height="910" loading="lazy" alt="HourBoard rates: hourly and per-visit pricing in PLN and EUR"></button></article>
+            <article class="step"><span class="step-number">02</span><h3 data-t="step2Title">Dodaj klientów</h3><p data-t="step2Text">Przypisz domyślną stawkę, czas wizyty i miesięczny plan. Kolejne wpisy będą szybsze.</p><button class="preview" type="button"><img src="/images/clients.png" width="1919" height="909" loading="lazy" alt="HourBoard demo client cards with default rates and monthly plans"></button></article>
+            <article class="step"><span class="step-number">03</span><h3 data-t="step3Title">Zapisz wizytę</h3><p data-t="step3Text">Kliknij dzień, wpisz godzinę rozpoczęcia i zakończenia. HourBoard obliczy czas i kwotę.</p><button class="preview" type="button"><img src="/images/visit.png" width="1919" height="908" loading="lazy" alt="HourBoard visit editor calculating 45 EUR for a one-hour online session"></button></article>
+          </div>
+        </section>
+        <section class="closing"><h2 data-t="tryTitle">Zacznij od jednego klienta.</h2><p data-t="tryText">Dla freelancerów, opiekunów, konsultantów i specjalistów rozliczających godziny lub wizyty. Utwórz konto i sprawdź HourBoard na własnym przykładzie.</p><div class="actions"><a class="primary" href="https://app.hourboard.pl" data-t="tryButton">Wypróbuj HourBoard</a><span class="note" data-t="languages">PL / EN / RU · PLN / EUR / USD / BYN</span></div></section>
       </main>
+      <dialog id="image-preview" aria-label="Screenshot"><button class="close-preview" type="button" aria-label="Close">×</button><img alt=""></dialog>
       <footer><span>© <span id="year"></span> HourBoard</span><a href="/privacy/" data-t="privacy">Polityka prywatności</a></footer>
     </div>
     <script>
@@ -68,6 +102,16 @@
         ru: { eyebrow: 'Тестовая версия уже доступна', title: 'Расписание, клиенты и заработок — в одном месте.', lead: 'HourBoard помогает независимым специалистам планировать работу с клиентами, записывать часы и визиты и сразу видеть заработок за месяц.', open: 'Открыть приложение', note: 'Работает на компьютере и телефоне', f1Title: 'Клиенты и расписание', f1Text: 'Весь месяц и все клиенты в одном понятном представлении.', f2Title: 'Часы и визиты', f2Text: 'Почасовые ставки и фиксированная оплата для разных видов работы.', f3Title: 'Заработок без подсчётов', f3Text: 'Автоматические итоги по клиентам, тарифам и месяцам.', privacy: 'Политика конфиденциальности' }
       };
       const select = document.querySelector('#language');
+      const tour = {
+        pl: {calendarTitle:'Zobacz swój miesiąc w jednym miejscu.',calendarText:'Wizyty oznaczone kolorami, godziny przy każdym kliencie i automatyczne podsumowania. Różne waluty mają osobne sumy.',demoCaption:'Przykładowe dane · interfejs po angielsku · kliknij, aby powiększyć',stepsTitle:'Od pierwszej stawki do gotowego grafiku.',step1Title:'Ustal swoje stawki',step1Text:'Wybierz kwotę, walutę i kolor. Rozliczaj pracę godzinowo lub za wizytę.',step2Title:'Dodaj klientów',step2Text:'Przypisz domyślną stawkę, czas wizyty i miesięczny plan. Kolejne wpisy będą szybsze.',step3Title:'Zapisz wizytę',step3Text:'Kliknij dzień, wpisz godzinę rozpoczęcia i zakończenia. HourBoard obliczy czas i kwotę.',tryTitle:'Zacznij od jednego klienta.',tryText:'Dla freelancerów, opiekunów, konsultantów i specjalistów rozliczających godziny lub wizyty. Utwórz konto i sprawdź HourBoard na własnym przykładzie.',tryButton:'Wypróbuj HourBoard',languages:'PL / EN / RU · PLN / EUR / USD / BYN'},
+        en: {calendarTitle:'Your whole month, in one place.',calendarText:'Colour-coded visits, hours for each client and automatic summaries. Each currency has its own total.',demoCaption:'Demo data · English interface · click an image to enlarge',stepsTitle:'From your first rate to a full schedule.',step1Title:'Set your rates',step1Text:'Choose an amount, currency and colour. Charge by the hour or per visit.',step2Title:'Add your clients',step2Text:'Assign a default rate, visit duration and monthly plan. Save time on your next entry.',step3Title:'Record a visit',step3Text:'Click a day and enter the start and end times. HourBoard calculates the duration and amount.',tryTitle:'Start with one client.',tryText:'For freelancers, caregivers, consultants and professionals who charge by the hour or visit. Create an account and try HourBoard with your own schedule.',tryButton:'Try HourBoard',languages:'PL / EN / RU · PLN / EUR / USD / BYN'},
+        ru: {calendarTitle:'Весь месяц перед глазами.',calendarText:'Цветные визиты, часы по каждому клиенту и автоматические итоги. Для каждой валюты — отдельная сумма.',demoCaption:'Демонстрационные данные · интерфейс на английском · нажмите на изображение для увеличения',stepsTitle:'От первого тарифа до готового расписания.',step1Title:'Создайте тарифы',step1Text:'Выберите сумму, валюту и цвет. Учитывайте оплату за час или за визит.',step2Title:'Добавьте клиентов',step2Text:'Укажите обычный тариф, длительность визита и план на месяц. Следующие записи займут меньше времени.',step3Title:'Запишите визит',step3Text:'Нажмите на день, укажите начало и конец работы. HourBoard рассчитает длительность и сумму.',tryTitle:'Начните с одного клиента.',tryText:'Для фрилансеров, сотрудников опеки, консультантов и специалистов с оплатой за часы или визиты. Создайте аккаунт и попробуйте HourBoard на своём расписании.',tryButton:'Попробовать HourBoard',languages:'PL / EN / RU · PLN / EUR / USD / BYN'}
+      };
+      Object.keys(tour).forEach(language => Object.assign(messages[language], tour[language]));
+      const preview = document.querySelector('#image-preview');
+      document.querySelectorAll('.preview').forEach(button => button.addEventListener('click', () => { const source = button.querySelector('img'); const image = preview.querySelector('img'); image.src = source.src; image.alt = source.alt; preview.showModal(); }));
+      preview.querySelector('button').addEventListener('click', () => preview.close());
+      preview.addEventListener('click', event => { if (event.target === preview) preview.close(); });
       const preferred = navigator.language.toLowerCase().startsWith('ru') ? 'ru' : navigator.language.toLowerCase().startsWith('pl') ? 'pl' : 'en';
       function setLanguage(language) { document.documentElement.lang = language; select.value = language; document.querySelectorAll('[data-t]').forEach((node) => { node.textContent = messages[language][node.dataset.t]; }); }
       select.addEventListener('change', () => setLanguage(select.value));
